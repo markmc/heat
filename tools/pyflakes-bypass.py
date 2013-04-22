@@ -3,7 +3,12 @@ from pyflakes.checker import Checker
 
 
 def report_with_bypass(self, messageClass, *args, **kwargs):
-    text_lineno = args[0] - 1
+    try:
+        text_lineno = args[0].lineno
+    except AttributeError:
+        # pyflakes <0.7 passes lineno as first arg
+        text_lineno = args[0]
+    text_lineno -= 1
     with open(self.filename, 'r') as code:
         if code.readlines()[text_lineno].find('pyflakes_bypass') >= 0:
             return
